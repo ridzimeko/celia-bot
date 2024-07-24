@@ -1,0 +1,29 @@
+{
+    "dependencies": {
+        "@grammyjs/chat-members": "^1.1.0",
+        "axios": "^1.7.2",
+        "dotenv": "^16.4.5",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "grammy": "^1.27.0",
+        "mongoose": "^8.5.1",
+        "nodemon": "^3.1.4",
+        "prettier": "^3.3.3",
+        "typescript": "^5.5.3"
+    },
+    "scripts": {
+        "start": "npx tsc && node ./dist/index.js",
+        "develop": "nodemon start --watch src --ext ts",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint --fix ."
+    },
+    "type": "commonjs",
+    "devDependencies": {
+        "@grammyjs/storage-mongodb": "^2.4.2",
+        "@types/node": "^20.14.11",
+        "envalid": "^8.0.0",
+        "eslint": "^8.57.0"
+    }
+}
