@@ -1,7 +1,5 @@
 import { Composer, FilterQuery, InlineKeyboard } from 'grammy';
 import { MyContext } from '../helpers/bot';
-import { ChatMemberAdministrator } from 'grammy/types';
-import { checkAdmin } from '../helpers/adminHelper';
 
 const messageServicesTypes: FilterQuery[] = [
     ':video_chat_ended',

@@ -1,19 +1,20 @@
 import { Composer } from 'grammy';
-import { checkAdmin } from '../helpers/adminHelper';
+import { botCanPinMessage, isAdmin } from '../helpers/adminHelper';
 import { MyContext } from '../helpers/bot';
 
 const composer = new Composer<MyContext>();
 
 composer
-    .hears(/[/]pin ?(\S+)?/)
     .chatType(['group', 'supergroup'])
-    .filter(checkAdmin, async (ctx) => {
+    .hears(/^[\/]pin\b( .+)?/)
+    .filter(isAdmin)
+    .use(botCanPinMessage, async (ctx: MyContext) => {
         let disableNotify = true;
         const replyMsg = ctx.message?.reply_to_message;
 
         try {
-            if (ctx.match[1]) {
-                if (ctx.match[1] === 'loud') disableNotify = false;
+            if (ctx?.match?.[1]) {
+                if (ctx.match[1].trim().toLowerCase() === 'loud') disableNotify = false;
                 else
                     return await ctx.reply('Parameter untuk pin pesan adalah *loud*', {
                         parse_mode: 'Markdown',

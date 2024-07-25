@@ -28,10 +28,6 @@ privateChat.command('help', async (ctx) => {
     }
 });
 
-privateChat.command('react', (ctx) => {
-    ctx.react('🎉');
-});
-
 privateChat.command('about', async (ctx) => {
     try {
         const keyboard = new InlineKeyboard()
@@ -51,6 +47,14 @@ privateChat.command('about', async (ctx) => {
     } catch (err) {
         await ctx.reply(setErrorMessage(err));
     }
+});
+
+composer.command('react', (ctx) => {
+    ctx.react('🎉');
+});
+
+composer.command('ping', (ctx) => {
+    ctx.reply('Pong!');
 });
 
 export default composer;

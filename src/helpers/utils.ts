@@ -18,7 +18,7 @@ async function sendErrorLogMessage(ctx: any, err: GrammyError) {
     return await ctx.api.sendMessage(ctx.config.logChatId, err.message);
 }
 
-function setErrorMessage(err: any) {
+function setErrorMessage(err: any | unknown) {
     return 'Ouch, terjadi error yang tidak diketahui\nError: ' + err.message;
 }
 

@@ -5,7 +5,8 @@ import { setErrorMessage } from '../helpers/utils';
 const composer = new Composer<MyContext>();
 
 composer.on('my_chat_member', async (ctx) => {
-    const { old_chat_member, new_chat_member } = ctx.myChatMember;
+    const { old_chat_member } = ctx.myChatMember;
+
     try {
         // send Message when bot added to group
         if (['kicked', 'left'].includes(old_chat_member.status)) {

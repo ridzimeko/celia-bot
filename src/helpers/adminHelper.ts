@@ -1,67 +1,42 @@
-import { ChatMemberAdministrator } from 'grammy/types';
+import { ChatAdministratorRights, ChatMemberAdministrator } from 'grammy/types';
 import { MyContext } from './bot.js';
-import { setErrorMessage } from './utils.js';
+import { NextFunction } from 'grammy';
 
 const ADMIN_STATUS = ['creator', 'administrator'];
 
-//  ==================== ADMIN STUFF ====================
-
-async function checkAdmin(ctx: MyContext) {
+async function isAdmin(ctx: MyContext) {
     // Handle case where ctx.chat or ctx.from is undefined
-    if (!ctx.chat || !ctx.from) {
-        return false;
-    }
+    if (!ctx.chat || !ctx.from) return false;
 
     const member = await ctx.chatMembers.getChatMember(ctx.chat.id, ctx.from.id);
 
     if (ctx.config.isDeveloper || ctx.config.isSudo || ADMIN_STATUS.includes(member.status)) return true;
-    ctx.reply('Hanya admin yang bisa menjalankan perintah ini!!');
+
+    await ctx.reply('Hanya admin yang bisa menjalankan perintah ini!!');
     return false;
 }
 
-function botCanRestrictUser(handler: Function) {
-    return async (ctx: MyContext) => {
-        try {
-            const me = await ctx.getChatMember(ctx.me.id); // Get bot status in the chat
+// Check if the bot has the specified permission
+export function checkBotPermission(permission: keyof ChatAdministratorRights, errorMessage: string) {
+    return async (ctx: MyContext, next: NextFunction) => {
+        const me = await ctx.getChatMember(ctx.me.id);
 
-            if (me.status === 'administrator') {
-                if (me.can_restrict_members) return await handler(ctx);
-                return await ctx.reply('Maaf, aku tidak punya izin untuk membatasi anggota');
-            }
-            return await ctx.reply('Aku bukan admin grup disini');
-        } catch (err) {
-            console.error(err);
-        }
-    };
-}
-
-function botCanPromoteUser(handler: Function) {
-    return async (ctx: MyContext) => {
-        const me = (await ctx.chatMembers.getChatMember(ctx.chat?.id, ctx.me.id)) as ChatMemberAdministrator;
-
-        // Check current bot status
         if (me.status === 'administrator') {
-            // Check if bot have permission to promote
-            if (me.can_promote_members) {
-                return await handler(ctx);
-            }
-            return await ctx.reply('Maaf, aku tidak punya izin untuk mempromosikan anggota');
+            if (me[permission]) return await next();
+            return await ctx.reply(errorMessage);
         }
 
-        return await ctx.reply('Aku bukan admin grup disini');
+        ctx.reply('Saya bukan admin di grup ini!');
     };
 }
 
-// TODO
-async function botCanDeleteMessage(ctx: MyContext) {
-    const { status, can_delete_messages } = (await ctx.chatMembers.getChatMember(ctx.chat?.id, ctx.me.id)) as ChatMemberAdministrator;
+// Restrict members middleware
+const botCanRestrictUser = checkBotPermission('can_restrict_members', 'Maaf, aku tidak punya izin untuk membatasi anggota');
 
-    if (status === 'administrator') {
-        if (can_delete_messages) return;
-        else return await ctx.reply('Maaf, aku tidak punya izin untuk mempromosikan anggota');
-    }
+// Promote members middleware
+const botCanPromoteUser = checkBotPermission('can_promote_members', 'Maaf, aku tidak punya izin untuk mempromosikan anggota');
 
-    await ctx.reply('Maaf, aku tidak punya izin untuk mempromosikan anggota');
-}
+// Pin chat message middleware
+const botCanPinMessage = checkBotPermission('can_pin_messages', 'Maaf, aku tidak punya izin untuk menyematkan pesan');
 
-export { checkAdmin, botCanRestrictUser, botCanPromoteUser };
+export { botCanRestrictUser, botCanPromoteUser, botCanPinMessage, isAdmin };

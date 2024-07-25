@@ -1,4 +1,4 @@
-import { Composer, InlineQueryResultBuilder } from 'grammy';
+import { Composer } from 'grammy';
 import { setErrorMessage } from '../helpers/utils';
 import { MyContext } from '../helpers/bot';
 import axios, { AxiosError } from 'axios';
@@ -16,20 +16,29 @@ function translateMessage(ctx: MyContext, data: { text: (string | undefined)[]; 
         })
         .then((res) => {
             ctx.reply(
-                `Source lang: <pre>${res.data.translations[0].detected_source_language}</pre>  \n\n${res.data.translations[0].text}`,
+                `Source lang: ${res.data.translations[0].detected_source_language}  \n\n<pre>${res.data.translations[0].text}</pre>`,
                 { parse_mode: 'HTML' }
             );
         })
         .catch((error: AxiosError) => {
-            ctx.reply(setErrorMessage(error.response ? error.response.data : error.message));
+            const { message } = error.response?.data as { message: string };
+            if (error.response?.status === 400) {
+                ctx.reply('Gagal translate, target bahasa tidak valid!');
+            } else if (error.response?.status === 403) {
+                ctx.reply(setErrorMessage('API key DeepL tidak valid!'));
+            } else if (error.response?.status === 456) {
+                ctx.reply(setErrorMessage('Quota API telah mencapai batas maksimal!'));
+            } else if (error.response?.status === 429) {
+                ctx.reply(setErrorMessage('Terlalu banyak request, silahkan coba lagi nanti!'));
+            } else {
+                ctx.reply(setErrorMessage(message || error.message));
+            }
         });
 }
 
-composer.on(':text').hears(/^\/(translate|tl)(.*)/, async (ctx) => {
+composer.on(':text').hears(/^[\/](translate|tl)\b(.*)/, async (ctx) => {
     if (!ctx.message?.reply_to_message) {
         return await ctx.reply('Balas pesan yang ingin kamu translate!');
-    } else if (ctx.match[2] && ctx.match[2].length > 2) {
-        return await ctx.reply('Target bahasa terjemahan tidak valid!');
     }
 
     const data = {

@@ -1,12 +1,14 @@
 import { Composer } from 'grammy';
 import { MyContext } from '../helpers/bot';
-import { botCanPromoteUser, checkAdmin } from '../helpers/adminHelper';
+import { botCanPromoteUser, isAdmin } from '../helpers/adminHelper';
 
 const composer = new Composer<MyContext>();
 
-composer.command('demote').filter(
-    checkAdmin,
-    botCanPromoteUser(async (ctx: MyContext) => {
+composer
+    .chatType(['group', 'supergroup'])
+    .command('demote')
+    .filter(isAdmin)
+    .use(botCanPromoteUser, async (ctx: MyContext) => {
         const reply_msg = ctx.message?.reply_to_message;
 
         try {
@@ -31,7 +33,6 @@ composer.command('demote').filter(
         } catch (err) {
             await ctx.reply('Ouch, terjadi error pada saat demote admin!\nError: ' + err);
         }
-    })
-);
+    });
 
 export default composer;
