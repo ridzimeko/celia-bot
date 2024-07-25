@@ -10,7 +10,7 @@ async function isAdmin(ctx: MyContext) {
 
     const member = await ctx.chatMembers.getChatMember(ctx.chat.id, ctx.from.id);
 
-    if (ctx.config.isDeveloper || ctx.config.isSudo || ADMIN_STATUS.includes(member.status)) return true;
+    if (ctx.config.isDeveloper || ADMIN_STATUS.includes(member.status)) return true;
 
     await ctx.reply('Hanya admin yang bisa menjalankan perintah ini!!');
     return false;

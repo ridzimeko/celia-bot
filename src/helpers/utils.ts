@@ -1,7 +1,7 @@
 import { GrammyError } from 'grammy';
 
 const checkDeveloper = async (ctx: any) => {
-    if (ctx.config.isDeveloper || ctx.config.isSudo) return true;
+    if (ctx.config.isDeveloper) return true;
 
     if (ctx.update.message) {
         ctx.reply('Maaf, perintah ini hanya untuk masterku atau pengembang bot >_<');

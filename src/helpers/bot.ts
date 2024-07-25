@@ -6,8 +6,6 @@ import { ChatMembersFlavor } from '@grammyjs/chat-members';
 interface BotConfig {
     botDeveloper: number;
     isDeveloper: boolean;
-    botSudo: number[];
-    isSudo: boolean;
     logChatId: number;
 }
 
