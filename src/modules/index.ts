@@ -9,9 +9,11 @@ import start from './start';
 import translate from './translate';
 import demote from './demote';
 import banMember from './banMember';
+import muteMember from './muteMember';
+import unpinMessage from './unpinMessage';
 
 const composer = new Composer<MyContext>();
 
-composer.use(chatMemberUpdate, json, leave, pinMessage, promote, start, translate, demote, banMember);
+composer.use(chatMemberUpdate, json, leave, pinMessage, promote, start, translate, demote, banMember, muteMember, unpinMessage);
 
 export default composer;

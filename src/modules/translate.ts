@@ -1,5 +1,4 @@
 import { Composer } from 'grammy';
-import { setErrorMessage } from '../helpers/utils';
 import { MyContext } from '../helpers/bot';
 import axios, { AxiosError } from 'axios';
 import constanst from '../config';
@@ -25,13 +24,13 @@ function translateMessage(ctx: MyContext, data: { text: (string | undefined)[]; 
             if (error.response?.status === 400) {
                 ctx.reply('Gagal translate, target bahasa tidak valid!');
             } else if (error.response?.status === 403) {
-                ctx.reply(setErrorMessage('API key DeepL tidak valid!'));
+                ctx.reply('API key DeepL tidak valid!');
             } else if (error.response?.status === 456) {
-                ctx.reply(setErrorMessage('Quota API telah mencapai batas maksimal!'));
+                ctx.reply('Quota API telah mencapai batas maksimal!');
             } else if (error.response?.status === 429) {
-                ctx.reply(setErrorMessage('Terlalu banyak request, silahkan coba lagi nanti!'));
+                ctx.reply('Terlalu banyak request, silahkan coba lagi nanti!');
             } else {
-                ctx.reply(setErrorMessage(message || error.message));
+                ctx.reply('Terjadi kesalahan pada translate. ' + message);
             }
         });
 }

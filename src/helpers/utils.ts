@@ -18,8 +18,31 @@ async function sendErrorLogMessage(ctx: any, err: GrammyError) {
     return await ctx.api.sendMessage(ctx.config.logChatId, err.message);
 }
 
-function setErrorMessage(err: any | unknown) {
-    return 'Ouch, terjadi error yang tidak diketahui\nError: ' + err.message;
+function setErrorMessage(error: string) {
+    return 'Ouch, terjadi error yang tidak diketahui\nError: ' + error;
 }
 
-export { checkDeveloper, sendErrorLogMessage, setErrorMessage };
+// format time like 2d (2 days), 10h (10 hour), 1y (1 year) to unix time
+
+function toUnixTime(time: string) {
+    const unit = time.at(-1);
+    const value = time.slice(0, -1);
+    switch (unit) {
+        case 'd':
+            return; // day
+        case 'h':
+            return parseInt(value) * 60 * 60; // hour
+        case 'm':
+            return parseInt(value) * 60; // month
+        case 'y':
+            return parseInt(value) * 365 * 24 * 60 * 60; // year
+        default:
+            return 0;
+    }
+}
+
+function formatTimeUnix(time: number) {
+    return new Date(time * 1000).toLocaleString();
+}
+
+export { checkDeveloper, sendErrorLogMessage, setErrorMessage, toUnixTime, formatTimeUnix };

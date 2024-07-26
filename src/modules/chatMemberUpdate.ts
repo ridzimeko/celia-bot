@@ -1,4 +1,4 @@
-import { Composer } from 'grammy';
+import { Composer, GrammyError } from 'grammy';
 import { MyContext } from '../helpers/bot';
 import { setErrorMessage } from '../helpers/utils';
 
@@ -17,8 +17,8 @@ composer.on('my_chat_member', async (ctx) => {
                 ].join(' ')
             );
         }
-    } catch (err) {
-        await ctx.api.sendMessage(ctx.config.logChatId, setErrorMessage(err));
+    } catch (err: any) {
+        await ctx.api.sendMessage(ctx.config.logChatId, setErrorMessage(err.message));
     }
 });
 

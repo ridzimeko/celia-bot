@@ -7,6 +7,7 @@ import startMongo from './helpers/startMongo';
 import modules from './modules';
 import botConfig from './middleware/botConfig';
 import checkRegisteredUser from './middleware/checkRegisteredUser';
+import { GrammyError, HttpError } from 'grammy';
 
 async function main() {
     console.log('Starting bot...');
@@ -28,6 +29,20 @@ async function main() {
     bot.use(botConfig);
     bot.use(checkRegisteredUser);
     bot.use(modules);
+
+    // Error handling
+    bot.catch((err) => {
+        const ctx = err.ctx;
+        console.error(`Error while handling update ${ctx.update.update_id}:`);
+        const e = err.error;
+        if (e instanceof GrammyError) {
+            console.error('Error in request:', err.message);
+        } else if (e instanceof HttpError) {
+            console.error('Could not contact Telegram:', err.message);
+        } else {
+            console.error('Unknown error:', err.message);
+        }
+    });
 
     // start bot
     bot.start({
