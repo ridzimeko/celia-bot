@@ -18,31 +18,48 @@ async function sendErrorLogMessage(ctx: any, err: GrammyError) {
     return await ctx.api.sendMessage(ctx.config.logChatId, err.message);
 }
 
-function setErrorMessage(error: string) {
-    return 'Ouch, terjadi error yang tidak diketahui\nError: ' + error;
+function setErrorMessage(error: any) {
+    const error_msg = error.description.split(' ').at(-1) || error;
+    return 'Ouch, terjadi error yang tidak diketahui\nError: ' + error_msg;
 }
 
 // format time like 2d (2 days), 10h (10 hour), 1y (1 year) to unix time
 
-function toUnixTime(time: string) {
-    const unit = time.at(-1);
-    const value = time.slice(0, -1);
+function toUnixTime(time: string): number {
+    const unit = time.at(-1) || '';
+    const value = parseInt(time.slice(0, -1));
+
+    if (isNaN(value)) return 0;
+
+    const currentTime = Math.floor(Date.now() / 1000);
+
     switch (unit) {
         case 'd':
-            return; // day
+            return currentTime + value * 24 * 60 * 60; // day
         case 'h':
-            return parseInt(value) * 60 * 60; // hour
+            return currentTime + value * 60 * 60; // hour
         case 'm':
-            return parseInt(value) * 60; // month
+            return currentTime + value * 60; // month
         case 'y':
-            return parseInt(value) * 365 * 24 * 60 * 60; // year
+            return currentTime + value * 365 * 24 * 60 * 60; // year
         default:
             return 0;
     }
 }
 
-function formatTimeUnix(time: number) {
-    return new Date(time * 1000).toLocaleString();
+function formatUnixTime(unixTimestamp: number) {
+    const date = new Date(unixTimestamp * 1000);
+
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getUTCFullYear();
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}/${month}/${day}, ${hours}:${minutes} GMT`;
+
+    return formattedDate;
 }
 
-export { checkDeveloper, sendErrorLogMessage, setErrorMessage, toUnixTime, formatTimeUnix };
+export { checkDeveloper, sendErrorLogMessage, setErrorMessage, toUnixTime, formatUnixTime };

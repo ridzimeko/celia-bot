@@ -1,6 +1,7 @@
-import { Composer } from 'grammy';
+import { Composer, GrammyError } from 'grammy';
 import { MyContext } from '../helpers/bot';
 import { botCanPromoteUser, isAdmin } from '../helpers/adminHelper';
+import { setErrorMessage } from '../helpers/utils';
 
 const composer = new Composer<MyContext>();
 
@@ -19,19 +20,23 @@ composer
                 return await ctx.reply('Umm... saya tidak bisa demote diri saya sendiri');
             }
 
-            const from_user = await ctx.getChatMember(reply_msg!.from!.id);
+            const member = await ctx.getChatMember(reply_msg!.from!.id);
 
             // Check if bot can promote target user
-            if (from_user.status === 'creator') {
+            if (member.status === 'creator') {
                 return await ctx.reply('Saya tidak bisa demote pemilik grup!');
-            } else if (from_user.status === 'administrator') {
-                ctx.promoteChatMember(reply_msg!.from!.id);
             }
 
-            await ctx.promoteChatMember(reply_msg!.from!.id);
-            await ctx.reply(`${reply_msg?.from?.first_name} telah berubah status menjadi member`);
-        } catch (err) {
-            await ctx.reply('Ouch, terjadi error pada saat demote admin!\nError: ' + err);
+            await ctx.promoteChatMember(member.user.id);
+            await ctx.reply(`${member.user.first_name} telah berubah status menjadi member`);
+        } catch (err: GrammyError | any) {
+            const error_message = err.description.split(' ').at(-1);
+
+            // Bot can't demote user when promoted by other admin
+            if (error_message === 'CHAT_ADMIN_REQUIRED') {
+                return await ctx.reply('Saya tidak bisa demote, kemungkinan pengguna dipromosikan oleh admin lain');
+            }
+            await ctx.reply(setErrorMessage(err));
         }
     });
 

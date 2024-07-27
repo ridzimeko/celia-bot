@@ -9,7 +9,7 @@ composer
     .command(['tempadmin', 'promote'])
     .filter(isAdmin)
     .use(botCanPromoteUser, async (ctx: MyContext) => {
-        const reply_msg = ctx.message?.reply_to_message;
+        const user_id = ctx.message?.reply_to_message?.from?.id;
         const command = ctx.message?.text?.split(' ')[0]; // Get command name
 
         const TEMP_ADMIN_PERMISSIONS = {
@@ -26,31 +26,31 @@ composer
 
         try {
             // Reply message condition
-            if (!reply_msg) {
+            if (!user_id) {
                 return await ctx.reply('Balas pesan ke user yang ingin di promote!');
-            } else if (reply_msg?.from?.id === ctx.me.id) {
+            } else if (user_id === ctx.me.id) {
                 return await ctx.reply('Umm... saya tidak bisa promote diri saya sendiri');
             }
 
-            const from_user = await ctx.getChatMember(reply_msg!.from!.id);
+            const from_user = await ctx.getChatMember(user_id);
 
             // Check if bot can promote target user
             if (from_user.status === 'creator') {
                 return await ctx.reply('Untuk apa promote kalau dia adalah pemilik grup?');
             } else if (from_user.status === 'administrator') {
-                await ctx.promoteChatMember(reply_msg!.from!.id);
+                return await ctx.reply('Pengguna sudah menjadi admin');
             }
 
             if (command === '/tempadmin') {
-                await ctx.promoteChatMember(reply_msg!.from!.id, TEMP_ADMIN_PERMISSIONS);
+                await ctx.promoteChatMember(from_user.user.id, TEMP_ADMIN_PERMISSIONS);
             } else {
                 // command === '/promote'
-                await ctx.promoteChatMember(reply_msg!.from!.id, ADMIN_PERMISSIONS);
+                await ctx.promoteChatMember(from_user.user.id, ADMIN_PERMISSIONS);
             }
 
-            await ctx.reply(`${reply_msg?.from?.first_name} berhasil dipromosikan sebagai admin!`);
-        } catch (err) {
-            await ctx.reply('Ouch, terjadi error pada saat mengangkat admin!\nError: ' + err);
+            await ctx.reply(`${from_user.user.first_name} berhasil dipromosikan sebagai admin!`);
+        } catch (err: any) {
+            await ctx.reply('Ouch, terjadi error pada saat mengangkat admin!\nError: ' + err.description);
         }
     });
 

@@ -1,42 +1,45 @@
 import { Composer } from 'grammy';
 import { MyContext } from '../helpers/bot';
 import { botCanRestrictUser, isAdmin } from '../helpers/adminHelper';
-import { formatTimeUnix, toUnixTime } from '../helpers/utils';
+import { formatUnixTime, setErrorMessage, toUnixTime } from '../helpers/utils';
 
 const composer = new Composer<MyContext>();
 
 composer
     .chatType(['group', 'supergroup'])
-    .hears(/^[\/]mute\b( .+\b)?( .+)?/)
+    .command('mute')
     .filter(isAdmin)
     .use(botCanRestrictUser, async (ctx: MyContext) => {
-        const user_id = ctx.message?.reply_to_message?.from?.id || parseInt(ctx?.match?.[1]?.trim() || '');
-        const restrict_time = toUnixTime(ctx?.match?.[1]?.trim() || ctx?.match?.[2]?.trim() || '');
-        const time_until = restrict_time ? formatTimeUnix(restrict_time) : '';
+        const [, arg1, arg2] = ctx.msg?.text?.split(/\s+/) || [];
+        const reply_msg = ctx.msg?.reply_to_message;
+        let until_date, user_id;
+
+        if (reply_msg) {
+            until_date = toUnixTime(arg1);
+            user_id = reply_msg.from?.id;
+        } else {
+            until_date = toUnixTime(arg2);
+            user_id = parseInt(arg1);
+        }
 
         try {
-            // Reply message condition
             if (!user_id) return await ctx.reply('Tidak dapat menemukan user yang di bisukan');
             if (user_id === ctx.me.id) return await ctx.reply('Kenapa saya harus membisukan diri saya sendiri?');
 
-            const from_user = await ctx.chatMembers.getChatMember(user_id);
+            const from_user = await ctx.getChatMember(user_id);
 
             // Check if bot can restrict target user
             if (from_user.status === 'creator') return await ctx.reply('Tidak dapat membisukan pemilik grup');
             if (from_user.status === 'administrator') return await ctx.reply('Maaf, saya tidak bisa membisukan admin lain');
-            if (from_user.status === 'restricted') {
-                if (from_user.until_date !== 0) {
-                    return await ctx.reply(`Pengguna sudah dibisukan`);
-                }
-                return await ctx.reply(`Pengguna telah dibisukan hingga ${formatTimeUnix(from_user.until_date)}`);
-            }
+            if (from_user.status === 'restricted' && from_user.can_send_messages === false)
+                return await ctx.reply(`Pengguna sudah dibisukan`);
 
-            await ctx.banChatMember(user_id, { until_date: restrict_time });
+            await ctx.restrictChatMember(from_user.user.id, { can_send_messages: false }, { until_date });
 
-            if (time_until) await ctx.reply(`${from_user.user.first_name} berhasil dibisukan hingga ${time_until}`);
+            if (until_date !== 0) await ctx.reply(`${from_user.user.first_name} berhasil dibisukan hingga ${formatUnixTime(until_date)}`);
             else await ctx.reply(`${from_user.user.first_name} berhasil dibisukan`);
         } catch (err) {
-            await ctx.reply('Ouch, terjadi error pada saat membisukan pengguna!\nError: ' + err);
+            await ctx.reply(setErrorMessage(err));
         }
     });
 
