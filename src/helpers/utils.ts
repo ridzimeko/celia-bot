@@ -24,9 +24,10 @@ function setErrorMessage(error: any) {
 }
 
 // format time like 2d (2 days), 10h (10 hour), 1y (1 year) to unix time
-
 function toUnixTime(time: string): number {
-    const unit = time.at(-1) || '';
+    if (!time) return 0;
+
+    const unit = time.at(-1);
     const value = parseInt(time.slice(0, -1));
 
     if (isNaN(value)) return 0;
