@@ -1,4 +1,21 @@
 {
+    "name": "celia-bot",
+    "description": "A simple group moderation bot made with grammyjs and mongodb.",
+    "version": "1.0.0",
+    "main": "./dist/index.js",
+    "private": true,
+    "license": "GPL-3.0-only",
+    "author": {
+        "name": "Ridzimeko",
+        "url": "https://github.com/ridzimeko"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ridzimeko/celia-bot"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    },
     "dependencies": {
         "@grammyjs/chat-members": "^1.1.0",
         "axios": "^1.7.2",
@@ -12,8 +29,8 @@
         "typescript": "^5.5.4"
     },
     "scripts": {
-        "start": "npx tsc && node ./dist/index.js",
-        "develop": "nodemon start --watch src --ext ts",
+        "start": "nodemon",
+        "build": "npx tsc",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "lint:check": "eslint .",
