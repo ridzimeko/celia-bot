@@ -18,7 +18,16 @@ privateChat.command('help', async (ctx) => {
         'Perintah yang tersedia :\n',
         '/about  -  melihat informasi tentang bot dan developer\n',
         '/react  -  memberi react ke pesan kamu\n',
-        '/translate | /tl  -  menerjemahkan pesan ke bahasa lain',
+        '/translate | /tl  -  menerjemahkan pesan ke bahasa lain\n',
+        '/json - mengubah pesan ke json (dapat digunakan untuk debugging)\n',
+        'Perintah untuk admin :\n',
+        '/ban - blokir anggota grup\n',
+        '/mute - bisukan anggota grup\n',
+        '/pin - pin pesan di grup\n',
+        '/unpin - melepas pin pesan grup\n',
+        '/unpinall - melepas semua pin pesan\n',
+        '/promote - mengangkat anggota sebagai admin\n',
+        '/demote - melepas admin menjadi anggota\n',
     ];
 
     try {
