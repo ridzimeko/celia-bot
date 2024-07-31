@@ -9,16 +9,16 @@ composer
   .hears(/^[\/]ban\b( .+)?/)
   .filter(isAdmin)
   .use(botCanRestrictUser, async (ctx: MyContext) => {
-    const reply_msg = ctx.message?.reply_to_message;
+    const user_id = ctx.message?.reply_to_message?.from?.id;
     const reason = ctx?.match?.[1]?.trim() || 'Tidak ada alasan';
 
     try {
       // Reply message condition
-      if (!reply_msg) return await ctx.reply('Balas pesan ke user yang ingin di ban!');
-      if (reply_msg.from?.id === ctx.me.id)
+      if (!user_id) return await ctx.reply('Balas pesan ke user yang ingin di ban!');
+      if (user_id === ctx.me.id)
         return await ctx.reply('Kenapa saya harus blokir diri saya sendiri?');
 
-      const from_user = await ctx.chatMembers.getChatMember(ctx.chat?.id, reply_msg?.from?.id);
+      const from_user = await ctx.getChatMember(user_id);
 
       // Check if bot can restrict target user
       if (from_user.status === 'creator')
@@ -28,9 +28,9 @@ composer
       if (from_user.status === 'kicked')
         return await ctx.reply('Pengguna sudah dikeluarkan dari grup');
 
-      await ctx.banChatMember(reply_msg?.from?.id);
+      await ctx.banChatMember(user_id);
       await ctx.reply(
-        `${reply_msg?.from?.first_name} berhasil diblokir dari grup!\nAlasan : ${reason}`,
+        `${from_user.user.first_name} berhasil diblokir dari grup!\nAlasan : ${reason}`,
       );
     } catch (err) {
       await ctx.reply(`Ouch, terjadi error pada saat ban pengguna!\nError: ${err}`);
