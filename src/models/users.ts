@@ -1,26 +1,26 @@
 import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
-    {
-        userId: {
-            type: Number,
-            required: true,
-        },
-        firstName: String,
-        lastName: String,
-        username: String,
+  {
+    userId: {
+      type: Number,
+      required: true,
     },
-    {
-        virtuals: {
-            fullname: {
-                get() {
-                    return this.firstName + ' ' + this.lastName;
-                },
-            },
+    firstName: String,
+    lastName: String,
+    username: String,
+  },
+  {
+    virtuals: {
+      fullname: {
+        get() {
+          return `${this.firstName} ${this.lastName}`;
         },
-        collection: 'userInfo',
-        timestamps: true,
-    }
+      },
+    },
+    collection: 'userInfo',
+    timestamps: true,
+  },
 );
 
 const User = model('User', userSchema);
