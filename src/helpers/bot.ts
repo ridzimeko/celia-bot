@@ -1,17 +1,17 @@
-import { Bot, Context, GrammyError, HttpError } from 'grammy';
+import type { ChatMembersFlavor } from '@grammyjs/chat-members';
+import { Bot, type Context } from 'grammy';
 import constanst from '../config.js';
-import { ChatMembersFlavor } from '@grammyjs/chat-members';
 
 // Define custom context type.
 interface BotConfig {
-    botDeveloper: number;
-    logChatId: number;
+  botDeveloper: number;
+  logChatId: number;
 }
 
 export type MyContext = Context &
-    ChatMembersFlavor & {
-        config: BotConfig;
-    };
+  ChatMembersFlavor & {
+    config: BotConfig;
+  };
 
 // Setup bot token
 const bot = new Bot<MyContext>(constanst.BOT_TOKEN);

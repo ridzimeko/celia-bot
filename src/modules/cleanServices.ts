@@ -1,23 +1,23 @@
-import { Composer, FilterQuery, InlineKeyboard } from 'grammy';
-import { MyContext } from '../helpers/bot';
+import { Composer, type FilterQuery } from 'grammy';
+import type { MyContext } from '../helpers/bot';
 
 const messageServicesTypes: FilterQuery[] = [
-    ':video_chat_ended',
-    ':video_chat_participants_invited',
-    ':video_chat_scheduled',
-    ':video_chat_started',
-    ':forum_topic_closed',
-    ':forum_topic_created',
-    ':forum_topic_edited',
-    ':forum_topic_reopened',
-    ':new_chat_photo',
-    ':new_chat_title',
-    ':group_chat_created',
-    ':delete_chat_photo',
-    ':pinned_message',
-    ':new_chat_members',
-    ':left_chat_member',
-    ':game',
+  ':video_chat_ended',
+  ':video_chat_participants_invited',
+  ':video_chat_scheduled',
+  ':video_chat_started',
+  ':forum_topic_closed',
+  ':forum_topic_created',
+  ':forum_topic_edited',
+  ':forum_topic_reopened',
+  ':new_chat_photo',
+  ':new_chat_title',
+  ':group_chat_created',
+  ':delete_chat_photo',
+  ':pinned_message',
+  ':new_chat_members',
+  ':left_chat_member',
+  ':game',
 ];
 
 const composer = new Composer<MyContext>();
