@@ -12,6 +12,13 @@ async function isAdmin(ctx: MyContext) {
 
   if (ctx.from.id === ctx.config.botDeveloper || ADMIN_STATUS.includes(member.status)) return true;
 
+  if (ctx.callbackQuery) {
+    await ctx.answerCallbackQuery({
+      text: 'Hanya admin yang bisa menjalankan perintah ini!!',
+      show_alert: true,
+    });
+    return false;
+  }
   await ctx.reply('Hanya admin yang bisa menjalankan perintah ini!!');
   return false;
 }

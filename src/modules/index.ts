@@ -6,6 +6,7 @@ import demote from './demote';
 import json from './json';
 import leave from './leave';
 import muteMember from './muteMember';
+import notes from './notes';
 import pinMessage from './pinMessage';
 import promote from './promote';
 import start from './start';
@@ -26,6 +27,7 @@ composer.use(
   banMember,
   muteMember,
   unpinMessage,
+  notes,
 );
 
 export default composer;
