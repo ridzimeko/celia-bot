@@ -22,8 +22,7 @@ async function sendErrorLogMessage(ctx: any, err: GrammyError) {
 }
 
 function setErrorMessage(error: any) {
-  const error_msg = error.description.split(' ').at(-1) || error;
-  return `Ouch, terjadi error yang tidak diketahui\nError: ${error_msg}`;
+  return `Ouch, terjadi error yang tidak diketahui\nError: ${error}`;
 }
 
 // format time like 2d (2 days), 10h (10 hour), 1y (1 year) to unix time

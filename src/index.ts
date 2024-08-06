@@ -55,8 +55,10 @@ async function main() {
       'chat_join_request',
       'inline_query',
     ],
+    onStart: () => {
+      console.log('Bot started and running!');
+    },
   });
-  console.log('Bot started and running!');
 }
 
 main();
